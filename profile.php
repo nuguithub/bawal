@@ -34,15 +34,35 @@
 
 ?>
 
+<style>
+#profilePic:hover~#changeProfile {
+    display: block;
+    transition: 0.6s ease;
+}
+
+#changeProfile {
+    display: none;
+}
+</style>
+
 <section>
     <div class="p-5">
         <div class="container">
             <div class="text-center">
-                <div class="mb-3">
-                    <picture id="profilePic">
+                <div class="mb-3 d-flex justify-content-center align-items-center">
+                    <picture id="profilePic" class="position-relative">
 
                     </picture>
-
+                    <form action="POST" enctype="multipart/form-data" id="changeProfile">
+                        <div class="ms-2 mb-3 text-start">
+                            <label class="form-label ps-2" for="image">Change Profile</label>
+                            <div class="" style="width:20vw;">
+                                <input type="file" class="form-control rounded-0" id="image" name="image"
+                                    accept=".jpg, .jpeg, .png">
+                                <input class="btn btn-primary mt-1 w-100" type="submit" value="Save">
+                            </div>
+                        </div>
+                    </form>
                 </div>
                 <div class="name">
                     <h2 class="fw-bold" id="name"></h2>

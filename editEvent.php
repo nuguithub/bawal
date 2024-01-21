@@ -27,7 +27,7 @@ include 'header.php';
                     <h3 class="card-title fw-semibold">Edit Event</h3>
                     <div id="editStat"></div>
                     <hr>
-                    <form method="POST" id="editEventForm">
+                    <form enctype="multipart/form-data" method="POST" id="editEventForm">
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="title" placeholder="Title" name="title">
                             <label for="title">Event Title</label>
@@ -37,6 +37,19 @@ include 'header.php';
                                 style="resize: none;" name="description"></textarea>
                             <label for="description">Description</label>
                         </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="venue" placeholder="Venue" name="venue">
+                            <label for="venue">Venue</label>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <input type="file" class="form-control" id="image" name="image" accept=".jpg, .jpeg, .png">
+                            <img id="imgPreview" style="height: 12vh; object-fit: cover; object-position: 50% 50%;"
+                                alt="...">
+                            <label for="image">Event Image</label>
+                        </div>
+
                         <div class="form-floating mb-3">
                             <input type="date" class="form-control datepicker" id="date" placeholder="Event Date"
                                 name="date" aria-label="Event Date" name="event_date">

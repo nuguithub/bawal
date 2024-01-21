@@ -6,20 +6,51 @@ document.addEventListener("DOMContentLoaded", function () {
 	saveProfile();
 });
 
+document
+	.getElementById("changeProfile")
+	.addEventListener("submit", function (event) {
+		event.preventDefault();
+		changeProfile();
+	});
+
+function changeProfile() {
+	var form = document.getElementById("changeProfile");
+	var formData = new FormData(form);
+
+	fetch("assets/saveProfile.php", {
+		method: "POST",
+		body: formData,
+	})
+		.then((response) => response.json())
+		.then((data) => {
+			alert(data.message);
+			fetchProfile();
+		})
+		.catch((error) => {
+			alert("danger", "Unexpected error occur.");
+		});
+}
+
 function fetchProfile() {
 	fetch("assets/getProfile.php")
 		.then((response) => response.json())
 		.then((profileData) => {
 			// console.log(profileData);
-			const imageSource = profileData.image
-				? profileData.image
-				: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+
+			let imageSource; // Declare imageSource outside the if-else block
+
+			if (!profileData.image || profileData.image === "") {
+				imageSource =
+					"https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+			} else {
+				imageSource = "images/" + profileData.image;
+			}
 
 			// Set image source dynamically
 			const pictureElement = document.getElementById("profilePic");
 			pictureElement.innerHTML = `
-			<source srcset="${imageSource}" type="image/svg+xml" height="200" width="200">
-			<img src="${imageSource}" class="img-fluid img-thumbnail rounded-5 object-fit-cover" alt="...">
+			<source srcset="${imageSource}" type="image/svg+xml" height="200" width="200" class="position-relative">
+			<img src="${imageSource}" class="rounded-5 object-fit-cover" height="200" width="200" alt="...">
 			`;
 
 			const fullName =

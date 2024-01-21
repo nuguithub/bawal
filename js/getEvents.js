@@ -110,7 +110,7 @@ function displayEvents(events) {
 		}).format(dateObject);
 
 		const imageSource = event.image
-			? event.image
+			? "images/" + event.image
 			: "https://cdn.head-fi.org/assets/classifieds/hf-classifieds_no-image-available_2.jpg";
 
 		const eventHTML = `

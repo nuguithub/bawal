@@ -77,14 +77,19 @@ function displayEvents(events) {
 			description.length > 150
 				? `<span id="seeMore_${index}" class="text-primary fst-italic" onclick="toggleDescription(${index}, '${description}')">See more</span>`
 				: "";
-		var participants = event.participants_count;
-		var participantsText =
+		const participants = event.participants_count;
+		const evID = event.id;
+		const participantsText =
 			participants < 1
 				? "No one has joined your event yet."
-				: participants + " people joined your event.";
+				: "<a href='participants.php?event_id=" +
+				  evID +
+				  "'>" +
+				  participants +
+				  " people</a> joined your event.";
 
 		const imageSource = event.image
-			? event.image
+			? "images/" + event.image
 			: "https://cdn.head-fi.org/assets/classifieds/hf-classifieds_no-image-available_2.jpg";
 
 		const eventHTML = `
@@ -95,7 +100,9 @@ function displayEvents(events) {
                 style="height: 22vh; object-fit: cover; object-position: 50% 50%;" alt="">
             </div>
             <div class="d-block ms-md-5 w-100">
-                <p class="fw-semibold mb-2">${formattedDate}</p>
+                <p class="fw-semibold mb-2">${formattedDate} at ${
+			event.venue
+		}</p>
                 <h3 class="fw-bold mb-2">${event.title}</h3>
                 <p class="fw-semibold mb-2 expanded" style="max-height: 10vh; overflow: auto;">
                     <span id="descriptionText_${index}">${limitedDescription}</span>

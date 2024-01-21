@@ -24,7 +24,7 @@
                 <div class="card-body p-5">
                     <h3 class="card-title fw-semibold">Create Event</h3>
                     <hr>
-                    <form method="POST" id="createEventForm">
+                    <form enctype="multipart/form-data" method="POST" id="createEventForm">
                         <div class="form-floating mb-3">
                             <input type="text" class="form-control" id="title" placeholder="Title" name="title">
                             <label for="title">Event Title</label>
@@ -33,6 +33,14 @@
                             <textarea type="text" class="form-control" id="description" placeholder="Description"
                                 style="resize: none;" name="description"></textarea>
                             <label for="description">Description</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="file" class="form-control" id="image" name="image" accept=".jpg, .jpeg, .png">
+                            <label for="image">Event Image</label>
+                        </div>
+                        <div class="form-floating mb-3">
+                            <input type="text" class="form-control" id="venue" placeholder="venue" name="venue">
+                            <label for="venue">Event Venue</label>
                         </div>
                         <div class="form-floating mb-3">
                             <input type="date" class="form-control datepicker" id="date" placeholder="Event Date"

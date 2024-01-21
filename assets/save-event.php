@@ -52,34 +52,67 @@ switch ($method) {
         break;
 
     case 'POST':
-        // Extract data from PUT request
         $title = $_POST['title'];
         $description = $_POST['description'];
-        $newDate = $_POST['date'];
-        $newTime = $_POST['time'];
+        $venue = $_POST['venue'];
+        $date = $_POST['date'];
+        $time = $_POST['time'];
 
-        $newDateTime = "$newDate $newTime";
+        $date_time = $date . ' ' . $time;
 
-        // Update event
-        $updateQuery = "UPDATE events 
-                        SET title = ?, 
-                            description = ?, 
-                            date_time = ? 
-                        WHERE id = ?";
-
-        $stmt = $conn->prepare($updateQuery);
-        $stmt->bind_param("sssi", $title, $description, $newDateTime, $event_id);
-
-        // Execute update query
-        $updateResult = $stmt->execute();
-
-        // Respond with success or error message
-        if ($updateResult) {
-            echo json_encode(['status' => 'success', 'message' => 'Event updated successfully']);
-        } else {
-            http_response_code(500); // Internal Server Error
-            echo json_encode(['status' => 'error', 'message' => 'Error updating event']);
+        // Fetch the old image path before updating
+        $oldImagePath = "";
+        if (!empty($event_id)) {
+            $stmt = $conn->prepare("SELECT image FROM events WHERE id=?");
+            $stmt->bind_param("i", $event_id);
+            $stmt->execute();
+            $stmt->bind_result($oldImagePath);
+            $stmt->fetch();
+            $stmt->close();
         }
+
+        // Validate and process the uploaded image
+        if (!empty($_FILES["image"]["name"])) {
+            $targetDir = "../images/";
+            $imageFileType = strtolower(pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION));
+            $targetFile = $targetDir . generateUniqueFileName(32) . "." . $imageFileType;
+
+            $check = getimagesize($_FILES["image"]["tmp_name"]);
+            if ($check === false) {
+                echo json_encode(['status' => 'error', 'message' => 'File is not an image or unsupported image format.']);
+                exit();
+            }
+
+            if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
+                // Update the database with the new image path
+                $stmt = $conn->prepare("UPDATE events SET title=?, description=?, venue=?, image=?, date_time=? WHERE id=?");
+                $stmt->bind_param("sssssi", $title, $description, $venue, $targetFile, $date_time, $event_id);
+                $stmt->execute();
+                $stmt->close();
+
+                // Delete the old image file
+                if (!empty($oldImagePath) && file_exists($oldImagePath) && !is_dir($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Failed to move the uploaded image.']);
+                exit();
+            }
+        } else {
+            // No new image uploaded, update the database without changing the image
+            $stmt = $conn->prepare("UPDATE events SET title=?, description=?, venue=?, date_time=? WHERE id=?");
+            $stmt->bind_param("ssssi", $title, $description, $venue, $date_time, $event_id);
+            $stmt->execute();
+            $stmt->close();
+
+            // Delete the old image file if it exists
+            if (!empty($oldImagePath) && file_exists($oldImagePath) && !is_dir($oldImagePath)) {
+                unlink($oldImagePath);
+            }
+        }
+
+
+        echo json_encode(['status' => 'success', 'message' => 'Event updated successfully']);
         break;
 
     default:
@@ -88,4 +121,12 @@ switch ($method) {
         break;
 }
 
+function generateUniqueFileName($length) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $randomString = '';
+    for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, strlen($characters) - 1)];
+    }
+    return $randomString;
+}
 ?>
